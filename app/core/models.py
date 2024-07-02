@@ -44,3 +44,15 @@ class About(models.Model):
     def __str__(self):
         """Returns the string representation of the model"""
         return self.content[:50]
+
+
+class Blogs(models.Model):
+    """Blog section"""
+    time = models.CharField(max_length=50)
+    title = models.CharField(max_length=200)
+    subtitle = models.TextField()
+    link = models.URLField()
+
+    def __str__(self):
+        return self.title
+
