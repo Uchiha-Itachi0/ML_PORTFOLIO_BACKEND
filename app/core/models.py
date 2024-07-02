@@ -32,3 +32,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class About(models.Model):
+    """ About section """
+    content = models.TextField()
+    skills = models.JSONField(default=list)
+    color_text = models.JSONField(default=list)
+    colors = models.JSONField(default=list)
+
+    def __str__(self):
+        """Returns the string representation of the model"""
+        return self.content[:50]
