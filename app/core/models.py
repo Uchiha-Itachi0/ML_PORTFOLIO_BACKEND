@@ -1,7 +1,7 @@
 """
 Database models
 """
-
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -56,3 +56,14 @@ class Blogs(models.Model):
     def __str__(self):
         return self.title
 
+
+class Project(models.Model):
+    """Project Section"""
+    tags = models.JSONField(default=list)
+    time = models.CharField(max_length=50)
+    title = models.CharField(max_length=200)
+    subtitle = models.TextField()
+    link = models.URLField()
+
+    def __str__(self):
+        return self.title
