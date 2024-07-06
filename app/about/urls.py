@@ -8,6 +8,5 @@ from . import views
 app_name = 'about'
 
 urlpatterns = [
-    path('get/', views.AboutView.as_view(), name='get'),
-    path('get_admin/', views.AboutUpdateView.as_view(), name='get_admin'),
+    path('', views.AboutRetrieveUpdateView.as_view(), name='about'),
 ]

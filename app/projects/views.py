@@ -7,26 +7,21 @@ from rest_framework import permissions, generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class PublicProjectView(generics.ListAPIView):
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-
-
-class ProjectCreateAPI(generics.CreateAPIView):
+class GetAndCreateProjectAPIView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-class ProjectUpdateAPI(generics.UpdateAPIView):
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return []
+        return super().get_permissions()
+
+
+class UpdateAndDeleteProjectAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-
-
-class ProjectDeleteAPI(generics.DestroyAPIView):
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'

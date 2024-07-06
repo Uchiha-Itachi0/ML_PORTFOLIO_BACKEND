@@ -6,27 +6,21 @@ from core.models import Blogs
 from blog.serializers import BlogSerializer
 
 
-class PublicBlogView(generics.ListAPIView):
-    queryset = Blogs.objects.all()
-    serializer_class = BlogSerializer
-
-
-class AdminBlogCreateView(generics.CreateAPIView):
+class GetAndCreateAPIView(generics.ListCreateAPIView):
     queryset = Blogs.objects.all()
     serializer_class = BlogSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return []
+        return super().get_permissions()
 
-class AdminBlogUpdateView(generics.UpdateAPIView):
+
+class UpdateAndDestroyAPIView(generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = Blogs.objects.all()
     serializer_class = BlogSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-
-
-class AdminBlogDeleteView(generics.DestroyAPIView):
-    queryset = Blogs.objects.all()
-    serializer_class = BlogSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'

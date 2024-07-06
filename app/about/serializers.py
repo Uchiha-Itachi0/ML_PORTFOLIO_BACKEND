@@ -1,6 +1,6 @@
-# about/serializers.py
 from rest_framework import serializers
 from core.models import About
+
 
 class AboutSerializer(serializers.ModelSerializer):
     """Serializer for the About object"""
@@ -13,17 +13,22 @@ class AboutSerializer(serializers.ModelSerializer):
         model = About
         fields = ['content', 'skills', 'color_text', 'colors']
 
+    def validate_content(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise serializers.ValidationError('Content must be a non-empty string.')
+        return value
+
     def validate_skills(self, value):
-        if not isinstance(value, list):
-            raise serializers.ValidationError('Skills must be given as a list')
+        if not isinstance(value, list) or not value:
+            raise serializers.ValidationError('Skills must be a non-empty list.')
         return value
 
     def validate_color_text(self, value):
-        if not isinstance(value, list):
-            raise serializers.ValidationError('Color text must be given as a list')
+        if not isinstance(value, list) or not value:
+            raise serializers.ValidationError('Color text must be a non-empty list.')
         return value
 
     def validate_colors(self, value):
-        if not isinstance(value, list):
-            raise serializers.ValidationError('Colors must be given as a list')
+        if not isinstance(value, list) or not value:
+            raise serializers.ValidationError('Colors must be a non-empty list.')
         return value

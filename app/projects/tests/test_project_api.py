@@ -16,7 +16,7 @@ class PublicProjectAPITest(TestCase):
 
     def test_fetch_successful(self):
         """Test for getting the data successfully"""
-        url = reverse('project:get')
+        url = reverse('project:get-no-query')
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -30,15 +30,15 @@ class PublicProjectAPITest(TestCase):
             'subtitle': 'Subtitle',
             'link': 'https://www.example.com'
         }
-        url = reverse('project:create')
+        url = reverse('project:get-no-query')
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_update_unauthorized(self):
         """Test unauthorized user can't update the data"""
         payload = Project.objects.create(tags=['Python', 'React'], time='20 April 2024', title='Test Blog',
-                                        subtitle='Subtitle',
-                                        link='https://www.example.com')
+                                         subtitle='Subtitle',
+                                         link='https://www.example.com')
 
         updated_payload = {
             'tags': ['Python', 'Java'],
@@ -47,7 +47,7 @@ class PublicProjectAPITest(TestCase):
             'subtitle': 'Updated subtitle',
             'link': 'https://www.example.com'
         }
-        url = reverse('project:update', args=[payload.id])
+        url = reverse('project:get-query', args=[payload.id])
         res = self.client.patch(url, updated_payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -58,7 +58,7 @@ class PublicProjectAPITest(TestCase):
                                       subtitle='Subtitle',
                                       link='https://www.example.com')
 
-        url = reverse('project:delete', args=[blog.id])
+        url = reverse('project:get-query', args=[blog.id])
         res = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -79,7 +79,6 @@ class PrivateProjectAPITest(TestCase):
         # Set authorization header
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
 
-
     def test_create_project_wrong_tags_type(self):
         """Test creating project with wrong tags type"""
         payload = {
@@ -90,7 +89,7 @@ class PrivateProjectAPITest(TestCase):
             'link': 'https://www.example.com'
         }
 
-        url = reverse('project:create')
+        url = reverse('project:get-no-query')
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -105,7 +104,7 @@ class PrivateProjectAPITest(TestCase):
             'link': 'https://www.example.com'
         }
 
-        url = reverse('project:create')
+        url = reverse('project:get-no-query')
         res = self.client.post(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -117,13 +116,14 @@ class PrivateProjectAPITest(TestCase):
                                          link='https://www.example.com')
 
         updated_payload = {
+            'tags': ['Python', 'C++'],
             'time': '21 April 2024',
             'title': 'Updated Test Project',
             'subtitle': 'Updated Subtitle',
             'link': 'https://www.updated-example.com'
         }
 
-        url = reverse('project:update', args=[payload.id])
+        url = reverse('project:get-query', args=[payload.id])
         res = self.client.put(url, updated_payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -133,6 +133,6 @@ class PrivateProjectAPITest(TestCase):
         payload = Project.objects.create(time='20 April 2024', title='Test Blog', subtitle='Subtitle',
                                          link='https://www.example.com')
 
-        url = reverse('project:delete', args=[payload.id])
+        url = reverse('project:get-query', args=[payload.id])
         res = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)

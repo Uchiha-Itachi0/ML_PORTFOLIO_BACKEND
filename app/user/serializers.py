@@ -4,6 +4,8 @@ Serializers for User API
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.tokens import UntypedToken
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -24,3 +26,15 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(
         style={'input_type': 'password'},
         trim_whitespace=False)
+
+
+class TokenValidationSerializer(serializers.Serializer):
+    token = serializers.CharField()
+
+    @staticmethod
+    def validate_token(value):
+        try:
+            UntypedToken(value)
+        except (InvalidToken, TokenError):
+            raise serializers.ValidationError("Token is invalid or expired")
+        return value

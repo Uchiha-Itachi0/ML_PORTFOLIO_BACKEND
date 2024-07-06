@@ -6,7 +6,7 @@ from django.urls import reverse
 from core.models import Blogs, User
 from rest_framework_simplejwt.tokens import AccessToken
 
-BLOG_URL = reverse('blog:get')
+BLOG_URL = reverse('blog:blog-no-query')
 # ADMIN_BLOG_URL = reverse('blog:get_admin')
 
 
@@ -31,8 +31,8 @@ class PublicBlogAPITest(TestCase):
             'subtitle': 'Subtitle',
             'link': 'https://www.example.com'
         }
-        url = reverse('blog:create')
-        res = self.client.post(url, payload, format='json')
+
+        res = self.client.post(BLOG_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_update_blog_unauthorized(self):
@@ -48,7 +48,7 @@ class PublicBlogAPITest(TestCase):
             'link': 'https://www.updated-example.com'
         }
 
-        url = reverse('blog:update', args=[blog.id])
+        url = reverse('blog:blog-query', args=[blog.id])
         res = self.client.put(url, updated_payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -58,7 +58,7 @@ class PublicBlogAPITest(TestCase):
         blog = Blogs.objects.create(time='20 April 2024', title='Test Blog', subtitle='Subtitle',
                                    link='https://www.example.com')
 
-        url = reverse('blog:delete', args=[blog.id])
+        url = reverse('blog:blog-query', args=[blog.id])
         res = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -89,8 +89,7 @@ class PrivateBlogAPITest(TestCase):
             'link': 'https://www.example.com'
         }
 
-        url = reverse('blog:create')
-        res = self.client.post(url, payload, format='json')
+        res = self.client.post(BLOG_URL, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_update_blog_successful(self):
@@ -106,7 +105,7 @@ class PrivateBlogAPITest(TestCase):
             'link': 'https://www.updated-example.com'
         }
 
-        url = reverse('blog:update', args=[blog.id])
+        url = reverse('blog:blog-query', args=[blog.id])
         res = self.client.put(url, updated_payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -116,6 +115,6 @@ class PrivateBlogAPITest(TestCase):
         blog = Blogs.objects.create(time='20 April 2024', title='Test Blog', subtitle='Subtitle',
                                    link='https://www.example.com')
 
-        url = reverse('blog:delete', args=[blog.id])
+        url = reverse('blog:blog-query', args=[blog.id])
         res = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
